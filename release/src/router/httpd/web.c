@@ -12401,7 +12401,7 @@ wps_finish:
 #endif
 #ifdef  __CONFIG_NORTON__
 	/* Trigger an NGA LiveUpdate */
-	else if (!strcmp(action_mode, "NGAUpdate"))
+	else if (!strcmp(action_mode, "NGAUpdate")) {
 		websWrite(wp, "Invoking LiveUpdate...");
 		if (nga_update())
 			websWrite(wp, "error<br>");
