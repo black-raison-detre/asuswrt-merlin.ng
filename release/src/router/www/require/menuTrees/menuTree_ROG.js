@@ -844,12 +844,17 @@ define(function(){
 	 * web_addons 1
 	 * <addon_name> <index>&<tab_url>&<tab_name>...
 	 * for addon_name and tab_name, underscore will be replace as space
+	 * This will add to a new menu spilt Addons, to add tabs to Tools menu, use format below
+	 * tools_tab_<addon_name> <tab_url>&<tab_name>...
 	 */
 	var addonSettings = '<% get_web_addon_settings(); %>';
 	var addonSettingsObj;
 
-	// Need icons for menu aswell
-	const iconsCSS = '<link rel="stylesheet" type="text/css" href="user/menu_icons/icons.css">'
+	/** Addon page location */
+	const addonURLPath = 'user/';
+
+	/** Need icons for menu aswell */
+	const iconsCSS = '<link rel="stylesheet" type="text/css" href="user/menu_icons/icons.css">';
 
 	const addonsMenuSpilt = {
 		menuName: "Addons",
@@ -857,22 +862,31 @@ define(function(){
 		tab: [{ url: "NULL", tabName: "__HIDE__" }]
 	};
 
+	/** Indivual addon menu object */
 	class Addon {
 		constructor(menuName, index, tabs) {
-			this.menuName = menuName.replace("_", " ");
+			this.menuName = menuName.replaceAll("_", " ");
 			this.index = index;
 			this.tab = [];
 			for (let i = 0; i < tabs.length; i+=2) {
 				let tabItem = {};
-				tabItem.url = tabs[i];
-				tabItem.tabName = tabs[i + 1].replace("_", " ");
+				tabItem.url = addonURLPath + tabs[i];
+				tabItem.tabName = tabs[i + 1].replaceAll("_", " ");
 				this.tab.push(tabItem);
 			}
 			this.tab.push({ url: "NULL", tabName: "__INHERIT__" });
 		}
 	};
 
-	/** Found out where Tools menu is */
+	/** Tools addon tab object */
+	class ToolsTab {
+		constructor(url, tabName) {
+			this.url = url;
+			this.tabName = tabName.replaceAll("_", " ");
+		}
+	}
+
+	/** Find out where Tools menu is */
 	var ToolsMenuIdx = menuTree.list.findIndex((item) => item.menuName === "Tools");
 	var AddonMenuIdx = 0;
 
@@ -897,10 +911,28 @@ define(function(){
 					// ignore web_addons enable flag
 					if (key === 'web_addons')
 						return;
-					let addonSettingsArray = addonSettingsObj[key].split("&");
+					// add to Tools menu's tabs
+					if (key.includes("tools_tab_")) {
+						let toolsTabArray = addonSettingsObj[key].split("&");
+						// array length should be even as it is url and tabName pair
+						if (toolsTabArray.length % 2 === 0 && toolsTabArray.length >= 2) {
+							/** Find out the end of tools tab */
+							let toolsTabIdx = menuTree.list[ToolsMenuIdx].tab.findIndex((item) => item.url === "NULL");
+							// should atleast > 2 as it contain Sysinfo and Other Settings
+							if (toolsTabIdx >= 2) {
+								for (let i = 0; i < toolsTabArray.length; i+=2) {
+									let tab = new ToolsTab(toolsTabArray[i], toolsTabArray[i + 1]);
+									menuTree.list[ToolsMenuIdx].tab.splice(toolsTabIdx, 0, tab);
+								}
+							}
+						}
+						return;
+					}
+					// add to new menu spilt Addons
+					let addonArray = addonSettingsObj[key].split("&");
 					// array length should be odd, otherwise the config is invalid
-					if (addonSettingsArray.length % 2 !== 0 || addonSettingsArray.length < 3) {
-						let addon = new Addon(key, addonSettingsArray[0], addonSettingsArray.slice(1));
+					if (addonArray.length % 2 !== 0 && addonArray.length >= 3) {
+						let addon = new Addon(key, addonArray[0], addonArray.slice(1));
 						menuTree.list.splice(AddonMenuIdx, 0, addon);
 						AddonMenuIdx++;
 					} else {
