@@ -777,6 +777,81 @@ define(function(){
 		}
 	}
 
+	/*
+	 * If web addon is installed, add new menu after Tools
+	 * (using get_web_addon_settings to get /jffs/addons/addon_settings.txt)
+	 *
+	 * file format
+	 * web_addons 1
+	 * <addon_name> <index>&<tab_url>&<tab_name>...
+	 * for addon_name and tab_name, underscore will be replace as space
+	 */
+	var addonSettings = '<% get_web_addon_settings(); %>';
+	var addonSettingsObj;
+
+	// Need icons for menu aswell
+	const iconsCSS = '<link rel="stylesheet" type="text/css" href="user/menu_icons/icons.css">'
+
+	const addonsMenuSpilt = {
+		menuName: "Addons",
+		index: "menu_Split",
+		tab: [{ url: "NULL", tabName: "__HIDE__" }]
+	};
+
+	class Addon {
+		constructor(menuName, index, tabs) {
+			this.menuName = menuName.replace("_", " ");
+			this.index = index;
+			this.tab = [];
+			for (let i = 0; i < tabs.length; i+=2) {
+				let tabItem = {};
+				tabItem.url = tabs[i];
+				tabItem.tabName = tabs[i + 1].replace("_", "");
+				this.tab.push(tabItem);
+			}
+			this.tab.push({ url: "NULL", tabName: "__INHERIT__" });
+		}
+	};
+
+	/** Found out where Tools menu is */
+	var ToolsMenuIdx = menuTree.list.findIndex((item) => item.menuName === "Tools");
+	var AddonMenuIdx = 0;
+
+	// try to parse the settings string
+	try {
+		addonSettingsObj = JSON.parse(addonSettings);
+	} catch {
+		addonSettingsObj = { web_addons: "0" };
+	}
+
+	if ('web_addons' in addonSettingsObj) {
+		// Have web addon enable
+		if (addonSettingsObj.web_addons === "1") {
+			if (ToolsMenuIdx > 0) {
+				document.head.innerHTML += iconsCSS;
+				// put in the menu seperator first
+				AddonMenuIdx = ToolsMenuIdx + 1;
+				menuTree.list.splice(AddonMenuIdx, 0, addonsMenuSpilt);
+				AddonMenuIdx++;
+				// then do the indivual addon menu defined by addonSettings
+				Object.keys(addonSettingsObj).forEach((key) => {
+					// ignore web_addons enable flag
+					if (key === 'web_addons')
+						return;
+					let addonSettingsArray = addonSettingsObj[key].split("&");
+					// array length should be odd, otherwise the config is invalid
+					if (addonSettingsArray.length % 2 !== 0 || addonSettingsArray.length < 3) {
+						let addon = new Addon(key, addonSettingsArray[0], addonSettingsArray.slice(1));
+						menuTree.list.splice(AddonMenuIdx, 0, addon);
+						AddonMenuIdx++;
+					} else {
+						return;
+					}
+				});
+			}
+		}
+	}
+
 	if(odmpid == "RT-N66U_C1"){
 		menuTree.list.filter(function(item, index, array){
 			if(item.index == "menu_BandwidthMonitor")

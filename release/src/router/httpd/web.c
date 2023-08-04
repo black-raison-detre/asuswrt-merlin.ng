@@ -243,7 +243,7 @@ extern int ssl_stream_fd;
 #endif
 
 // Custom action header
-#include "custom_action.h"
+//#include "custom_action.h"
 
 extern int ej_wl_sta_list_2g(int eid, webs_t wp, int argc, char_t **argv);
 extern int ej_wl_sta_list_5g(int eid, webs_t wp, int argc, char_t **argv);
@@ -13267,6 +13267,7 @@ do_apply_cgi(char *url, FILE *stream)
 }
 
 // Custom action API
+/*
 static void do_custom_cgi(char *url, FILE *stream) {
 	struct json_object *root = json_object_new_object();
 	
@@ -13277,6 +13278,7 @@ static void do_custom_cgi(char *url, FILE *stream) {
 	if (root)
 		json_object_put(root);
 }
+*/
 
 /* Look for unquoted character within a string */
 char *
@@ -21762,7 +21764,7 @@ struct mime_handler mime_handlers[] = {
 	{ "applyapp.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
 	{ "appGet.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_appGet_cgi, do_auth },
 	// custom action API
-	{ "customAction.cgi", "text/html", no_cache_IE7, do_html_post_and_get, do_custom_cgi, do_auth },
+	//{ "customAction.cgi", "text/html", no_cache_IE7, do_html_post_and_get, do_custom_cgi, do_auth },
 	{ "upgrade.cgi*", "text/html", no_cache_IE7, do_upgrade_post, do_upgrade_cgi, do_auth},
 	{ "upload.cgi*", "text/html", no_cache_IE7, do_upload_post, do_upload_cgi, do_auth },
 	{ "set_ASUS_EULA.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_set_ASUS_EULA_cgi, do_auth },
@@ -32451,6 +32453,7 @@ struct ej_handler ej_handlers[] = {
 	{ "get_tcclass_array", ej_tcclass_dump_array},
 	{ "get_connlist_array", ej_connlist_array},
 	{ "get_custom_settings", ej_get_custom_settings},
+	{ "get_web_addon_settings", ej_get_web_addon_settings},
 #ifdef RTCONFIG_BCMWL6
 	{ "get_wl_status", ej_wl_status_array},
 #endif

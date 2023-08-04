@@ -118,7 +118,7 @@ OBJS += aspbw.o initial_web_hook.o
 OBJS += apps.o
 OBJS += sysinfo.o data_arrays.o web-broadcom-am.o
 # Custom action API
-OBJS += custom_action.o
+#OBJS += custom_action.o
 
 ifeq ($(CONFIG_REALTEK),y)
 OBJS += web-realtek.o

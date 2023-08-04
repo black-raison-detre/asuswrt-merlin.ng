@@ -1293,3 +1293,33 @@ void write_custom_settings(char *jstring) {
 
 	json_object_put(settings_obj);
 }
+
+int ej_get_web_addon_settings(int eid, webs_t wp, int argc, char **argv_) {
+
+	struct json_object *settings_obj;
+	int ret = 0;
+	char line[3040];
+	char name[30];
+	char value[3000];
+	FILE *fp;
+
+	fp = fopen("/jffs/addons/addon_settings.txt", "r");
+	if (fp == NULL) {
+		ret += websWrite(wp,"{\"web_addons\":\"0\"}");
+		return 0;
+	}
+
+	settings_obj = json_object_new_object();
+	while (fgets(line, sizeof(line), fp)) {
+		if (sscanf(line,"%29s%*[ ]%2999s%*[ \n]",name, value) == 2) {
+			json_object_object_add(settings_obj, name, json_object_new_string(value));
+		}
+	}
+	fclose(fp);
+
+	ret += websWrite(wp, "%s", json_object_to_json_string(settings_obj));
+
+	json_object_put(settings_obj);
+	return ret;
+}
+
