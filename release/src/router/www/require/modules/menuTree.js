@@ -806,7 +806,7 @@ define(function(){
 			for (let i = 0; i < tabs.length; i+=2) {
 				let tabItem = {};
 				tabItem.url = tabs[i];
-				tabItem.tabName = tabs[i + 1].replace("_", "");
+				tabItem.tabName = tabs[i + 1].replace("_", " ");
 				this.tab.push(tabItem);
 			}
 			this.tab.push({ url: "NULL", tabName: "__INHERIT__" });
