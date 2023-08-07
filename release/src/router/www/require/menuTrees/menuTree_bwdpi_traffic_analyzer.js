@@ -916,7 +916,7 @@ define(function(){
 
 	/*
 	 * If web addon is installed, add new menu after Tools
-	 * (using get_web_addon_settings to get /jffs/addons/addon_settings.txt)
+	 * (using get_web_addons_menu to get /jffs/addons/addons_menu.txt)
 	 *
 	 * file format
 	 * web_addons 1
@@ -925,8 +925,8 @@ define(function(){
 	 * This will add to a new menu spilt Addons, to add tabs to Tools menu, use format below
 	 * tools_tab_<addon_name> <tab_url>&<tab_name>...
 	 */
-	var addonSettings = '<% get_web_addon_settings(); %>';
-	var addonSettingsObj;
+	var addonsMenu = '<% get_web_addons_menu(); %>';
+	var addonsMenuObj;
 
 	/** Addon page location */
 	const addonURLPath = 'user/';
@@ -970,28 +970,28 @@ define(function(){
 
 	// try to parse the settings string
 	try {
-		addonSettingsObj = JSON.parse(addonSettings);
+		addonsMenuObj = JSON.parse(addonsMenu);
 	} catch {
-		addonSettingsObj = { web_addons: "0" };
+		addonsMenuObj = { web_addons: "0" };
 	}
 
-	if ('web_addons' in addonSettingsObj) {
+	if ('web_addons' in addonsMenuObj) {
 		// Have web addon enable
-		if (addonSettingsObj.web_addons === "1") {
+		if (addonsMenuObj.web_addons === "1") {
 			if (ToolsMenuIdx > 0) {
 				document.head.innerHTML += iconsCSS;
 				// put in the menu seperator first
 				AddonMenuIdx = ToolsMenuIdx + 1;
 				menuTree.list.splice(AddonMenuIdx, 0, addonsMenuSpilt);
 				AddonMenuIdx++;
-				// then do the indivual addon menu defined by addonSettings
-				Object.keys(addonSettingsObj).forEach((key) => {
+				// then do the indivual addon menu defined by addonsMenu
+				Object.keys(addonsMenuObj).forEach((key) => {
 					// ignore web_addons enable flag
 					if (key === 'web_addons')
 						return;
 					// add to Tools menu's tabs
 					if (key.includes("tools_tab_")) {
-						let toolsTabArray = addonSettingsObj[key].split("&");
+						let toolsTabArray = addonsMenuObj[key].split("&");
 						// array length should be even as it is url and tabName pair
 						if (toolsTabArray.length % 2 === 0 && toolsTabArray.length >= 2) {
 							/** Find out the end of tools tab */
@@ -1007,7 +1007,7 @@ define(function(){
 						return;
 					}
 					// add to new menu spilt Addons
-					let addonArray = addonSettingsObj[key].split("&");
+					let addonArray = addonsMenuObj[key].split("&");
 					// array length should be odd, otherwise the config is invalid
 					if (addonArray.length % 2 !== 0 && addonArray.length >= 3) {
 						let addon = new Addon(key, addonArray[0], addonArray.slice(1));

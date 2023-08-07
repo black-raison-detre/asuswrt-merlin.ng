@@ -32434,7 +32434,7 @@ struct ej_handler ej_handlers[] = {
 	{ "get_tcclass_array", ej_tcclass_dump_array},
 	{ "get_connlist_array", ej_connlist_array},
 	{ "get_custom_settings", ej_get_custom_settings},
-	{ "get_web_addon_settings", ej_get_web_addon_settings},
+	{ "get_web_addons_menu", ej_get_web_addons_menu},
 #ifdef RTCONFIG_BCMWL6
 	{ "get_wl_status", ej_wl_status_array},
 #endif

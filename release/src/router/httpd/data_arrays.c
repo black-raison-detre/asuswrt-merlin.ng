@@ -1294,16 +1294,16 @@ void write_custom_settings(char *jstring) {
 	json_object_put(settings_obj);
 }
 
-int ej_get_web_addon_settings(int eid, webs_t wp, int argc, char **argv_) {
+int ej_get_web_addons_menu(int eid, webs_t wp, int argc, char **argv_) {
 
 	struct json_object *settings_obj;
 	int ret = 0;
-	char line[3040];
+	char line[100];
 	char name[30];
-	char value[3000];
+	char value[1000];
 	FILE *fp;
 
-	fp = fopen("/jffs/addons/addon_settings.txt", "r");
+	fp = fopen("/jffs/addons/addons_menu.txt", "r");
 	if (fp == NULL) {
 		ret += websWrite(wp,"{\"web_addons\":\"0\"}");
 		return 0;

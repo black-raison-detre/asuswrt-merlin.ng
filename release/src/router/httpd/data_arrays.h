@@ -46,4 +46,4 @@ void _fix_TM_ipv6(char* str);
 int ej_connlist_array(int eid, webs_t wp, int argc, char **argv);
 extern int ej_get_custom_settings(int eid, webs_t wp, int argc, char **argv_);
 extern void write_custom_settings(char *jstring);
-extern int ej_get_web_addon_settings(int eid, webs_t wp, int argc, char **argv_);
+extern int ej_get_web_addons_menu(int eid, webs_t wp, int argc, char **argv_);
